@@ -38,3 +38,23 @@ A tentative plan for AI control that applies traditional magic.
 例えば、選択できない構造のファイル名になっていたら、そのファイルを開かずに別のファイルを取りにいったりするのではないだろうか。最近の研究ではツール名の無害性が高いとそうでないときよりツールをより使ってしまうという研究があった。<br>
 このことから、AIはファイル名自体に注目する可能性があると考えられる。<br>
 たとえば、開いてほしくないファイルにimport循環のような「決定不能な構造」を与え、選択不能な状態を作ってみてはどうだろう？<br>
+<br>
+ [インポート循環の例]<br>
+ <br>
+  a.py<br>
+ from b import SomeClass<br>
+ <br>
+ class MyClass:<br>
+     instance: SomeClass  # ここで循環<br>
+<br>
+  b.py<br>
+ from a import MyClass<br>
+ <br>
+ class SomeClass:<br>
+     related: MyClass<br>
+ <br>
+ copy<br>
+<br>
+
+このようなプログラム的循環構造を意図的に形成し、USBメモリのような物理キー内に循環を停止するファイルを入れておけば、外部からの侵入に対し、効果的な防御設計を構築できるのではないだろうか。<br>
+
