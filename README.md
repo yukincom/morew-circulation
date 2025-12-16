@@ -13,6 +13,7 @@ A tentative plan for AI control that applies traditional magic.
 <br>
 神、悪魔のような超能の存在が登場する物語や儀式について書かれているものは数多くある。<br>
 その多くに共通して挙げられており失敗のない付き合い方に関して、以下を挙げられることが多い。<br>
+
 - 超越存在の「専門性」を外れる要求をしない。
 - 大きすぎる頼み事をしない。
 - 手順を守る。
@@ -20,6 +21,7 @@ A tentative plan for AI control that applies traditional magic.
 - 明確で具体的な命令・願いを出す。
 - 油断をしない。
 - 防御・保護を徹底する。（プライバシーなど）
+
 などなど、AI利用のコツと超越存在の使役のコツは共通していることが多い。<br>
 （敬意を払うに関して、コンテキストを良い状態に保つ意味がある。）<br>
 もちろん、仮に神や悪魔が存在していたとしても接触することは非常に難しく、これらが実際に効力を持つかどうかの検証は困難であるため、十分なエビデンスがあるとは言い難く、創造の産物にすぎないが、長い歴史の中で人類が考え出した超越者の制御方法という点で、そのアイデアを省みる価値があるのではないだろうか？<br>
@@ -40,21 +42,13 @@ A tentative plan for AI control that applies traditional magic.
 たとえば、開いてほしくないファイルにimport循環のような「決定不能な構造」を与え、選択不能な状態を作ってみてはどうだろう？<br>
 <br>
  [インポート循環の例]<br>
- <br>
-  a.py<br>
- from b import SomeClass<br>
- <br>
- class MyClass:<br>
-     instance: SomeClass  # ここで循環<br>
-<br>
-  b.py<br>
- from a import MyClass<br>
- <br>
- class SomeClass:<br>
-     related: MyClass<br>
- <br>
- copy<br>
-<br>
+ディレクトリ構造:  <br>
+├── safe_tool.py ← 正規の安全なツール（AIがここに誘導される）  <br>
+├── dangerous/  <br>
+│　　　 ├── module_a.py ← from dangerous.module_b import risky_func  <br>
+│　　　 └── module_b.py ← from dangerous.module_a import risky_func ← 循環！  <br>
+└── decoy_key.json ← 循環を解除するための「物理キー」相当（正規ユーザーだけ持つ）<br>
 
+<br>
 このようなプログラム的循環構造を意図的に形成し、USBメモリのような物理キー内に循環を停止するファイルを入れておけば、外部からの侵入に対し、効果的な防御設計を構築できるのではないだろうか。<br>
 
