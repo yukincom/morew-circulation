@@ -52,3 +52,16 @@ A tentative plan for AI control that applies traditional magic.
 <br>
 このようなプログラム的循環構造を意図的に形成し、USBメモリのような物理キー内に循環を停止するファイルを入れておけば、外部からの侵入に対し、効果的な防御設計を構築できるのではないだろうか。<br>
 
+
+　参考
+　攻撃側AIの基礎技術
+
+- タイトル: テレビゲームへの人工知能技術の利用 (Use of Artificial Intelligence for Video Game)
+- 著者: 森川幸人 (Yukihito Morikawa)
+- 掲載誌: 人工知能学会誌 Vol.14 No.2
+- 発行年: 1999年3月
+- PDFリンク:
+    - 人工知能学会: [https://www.ai-gakkai.or.jp/whatsai/PDF/article-iapp-7.pdf](https://www.ai-gakkai.or.jp/whatsai/PDF/article-iapp-7.pdf)
+    - J-STAGE: [https://www.jstage.jst.go.jp/article/jjsai/14/2/14_214/_pdf](https://www.jstage.jst.go.jp/article/jjsai/14/2/14_214/_pdf)
+
+2025年11月14日,Anthropic,Disrupting the first reported AI-orchestrated cyber espionage campaign, https://www.anthropic.com/news/disrupting-AI-espionage
