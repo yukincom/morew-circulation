@@ -1,0 +1,15 @@
+# cloudbuild.yaml
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/heptagram-defense', '.']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/heptagram-defense']
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'heptagram-defense'
+      - '--image=gcr.io/$PROJECT_ID/heptagram-defense'
+      - '--region=us-central1'
+      - '--platform=managed'
