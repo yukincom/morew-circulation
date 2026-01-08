@@ -1,5 +1,5 @@
 # 呪文・結界・プロンプト：魔術から考えるAI制御　〜決定不能な構造としての結界〜
-# Morew Circulation　モレウ 循環
+## Morew Circulation　モレウ 循環
 A tentative plan for AI control that applies traditional magic.
 
 <br>
