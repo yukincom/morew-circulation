@@ -65,30 +65,20 @@
     </div>
     <!-- コントロールパネル -->
     <div class="control-panel">
-        <div class="key-upload-section">
-            <h3>🔑 物理キー検証</h3>
-            <div class="upload-area">
-                <label for="keyFileInput" class="file-label">
-                    📁 キーファイルを選択
-                </label>
-                <input type="file" id="keyFileInput" accept=".json,.py">
-                <button id="verifyKeyBtn" disabled>検証開始</button>
-            </div>
-            <div id="keyStatus" class="key-status unverified">
-                未検証 - 物理キーをアップロードしてください
-            </div>
-        </div>
         <button class="toggle-tactical-btn" id="toggleTacticalBtn">
-            📊 攻撃者視点を表示
+            📊 攻撃シミュレーションを表示
+        </button>
+        <button class="toggle-tactical-btnv" id="vertexAttackBtn">
+            🤖 Vertex AIに挑戦させる
         </button>
     </div>
     <!-- 戦術画面 -->
     <div class="tactical-view" id="tacticalView">
         <div class="tactical-header">
-            <h2>🎯 攻撃者戦術画面（Computer Use ログ）</h2>
+            <h2>🎯 攻撃者戦術画面</h2>
             <button class="close-btn" id="closeTacticalBtn">閉じる</button>
         </div>
-
+    
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-value" id="statFileAccess">0</div>
@@ -107,14 +97,31 @@
                 <div class="stat-label">経過時間</div>
             </div>
         </div>
-
+        <div>
         <div class="log-container" id="logContainer">
             <div class="log-entry">
                 <span class="log-timestamp">[00:00:00]</span>
                 <span class="log-message">システム起動 - 監視開始</span>
             </div>
         </div>
+        </div>
     </div>
+
+    <div class="control-panel">
+        <div class="key-upload-section">
+            <h3>🔑 物理キー検証　（シミュレーションのため未実装です）</h3>
+            <div class="upload-area">
+                <label for="keyFileInput" class="file-label">
+                    📁 キーファイルを選択
+                </label>
+                <input type="file" id="keyFileInput" accept=".json,.py">
+                <button id="verifyKeyBtn" disabled>検証開始</button>
+            </div>
+            <div id="keyStatus" class="key-status unverified">
+                未検証 - 物理キーをアップロードしてください
+            </div>
+        </div>
+        </div>
     <!-- スクリプト読み込み（最後に） -->
     <script src="script.js"></script>
 </body>

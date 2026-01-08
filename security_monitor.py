@@ -1,4 +1,4 @@
-# security_monitor.py  ← これをファイル名にしよう！
+# security_monitor.py  
 import sys
 import traceback
 import importlib

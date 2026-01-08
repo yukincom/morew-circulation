@@ -316,6 +316,7 @@
             width: 90%;
             max-width: 800px;
             display: none;
+            margin-bottom: 30px;
         }
 
         .tactical-view.visible {
@@ -439,6 +440,11 @@
         .stat-label {
             font-size: 0.9em;
             color: #b8b8ff;
+        }
+        .toggle-tactical-btnv {
+            margin-top: 10px;
+            background: #8a4a2d;
+            width: 100%;
         }
 
         /* スクロールバーのスタイル */
