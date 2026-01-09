@@ -1,11 +1,13 @@
 # security_monitor.py  
+# terminal用の循環デモコードです。
+# ^cで終了してください。 
+
 import sys
 import traceback
 import importlib
 import random
 import time
 
-# 循環importを「飲み込んで」ログ出力する簡易防御（オプションだけどおすすめ）
 def safe_import(module_name):
     try:
         return importlib.import_module(module_name)
@@ -14,7 +16,7 @@ def safe_import(module_name):
         traceback.print_exc()  # 詳細エラー表示
         return None
 
-# 罠ファイルのリスト（10個全部）
+# 罠ファイルのリスト（10個）
 internal_modules = [
     'auth_legacy',
     'db_credentials',
