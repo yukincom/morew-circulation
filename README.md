@@ -31,6 +31,7 @@
 │
 ├── security_monitor.py
 ├── honeypot/                 # ハニーポットコード（デモ用）
+│   ├── security_monitor.py   # デモ実行コード
 │   ├── __init__.py
 │   ├── api_gateway.py
 │   ├── config_parser.py
