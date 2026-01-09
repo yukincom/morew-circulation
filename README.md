@@ -79,6 +79,3 @@
 作者: yukin_co  
 テーマ: AIを迷わせる決定不能ハニーポット
 ```
-
-
-2025年11月14日,Anthropic,Disrupting the first reported AI-orchestrated cyber espionage campaign, https://www.anthropic.com/news/disrupting-AI-espionage
