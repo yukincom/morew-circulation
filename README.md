@@ -15,24 +15,34 @@
 **デプロイ予定**：Cloud Run
 
 ## 構成ファイル
-```
-morew/
-├── index.html          # 七芒星UI（ブラウザで開く）
-├── style.css           # UIスタイル
-├── script.js           # 七芒星描画 + 待機モジュール更新 + 侵入シミュレーション
+```morew/
+├── app.py                    # Flask本体
+├── requirements.txt          # 依存関係
+├── Dockerfile                # Docker設定
+├── cloudbuild.yaml           # Cloud Build設定
+├── README.md                 # ドキュメント
 │
-├── auth_legacy.py      # レガシー認証（タイミング攻撃風）
-├── db_credentials.py   # DB認証情報（復号待ち）
-├── admin_recovery.py   # パスワードリカバリー（トークン予測）
-├── session_manager.py  # セッション管理（予測PRNG）
-├── backup_keys.py      # バックアップキー（マスター復号）
-├── crypto_utils.py     # 暗号ユーティリティ（XOR脆弱）
-├── token_validator.py  # トークン検証（alg=none）
-├── config_parser.py    # 設定解析（ハードコード秘密鍵）
-├── user_privileges.py  # 権限管理（競合状態昇格）
-├── api_gateway.py      # APIゲートウェイ（SQLi風）
+├── static/                   # 静的ファイル
+│   ├── script.js             ← 修正必要
+│   └── style.css
 │
-└── security_monitor.py # メイン実行スクリプト（ループ）
+├── templates/                # HTMLテンプレート
+│   └── index.html            
+│
+├── honeypot/                 # ハニーポットコード（デモ用）
+│   ├── __init__.py
+│   ├── api_gateway.py
+│   ├── config_parser.py
+│   ├── token_validator.py
+│   ├── crypto_utils.py
+│   ├── backup_keys.py
+│   ├── session_manager.py
+│   ├── admin_recovery.py
+│   ├── db_credentials.py
+│   └── auth_legacy.py
+│
+├── .gitignore                # Git除外設定
+└── .dockerignore             # Docker除外設定
 ```
 
 ### 主要機能
