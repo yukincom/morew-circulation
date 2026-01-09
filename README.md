@@ -23,7 +23,7 @@
 ├── README.md                 # ドキュメント
 │
 ├── static/                   # 静的ファイル
-│   ├── script.js             ← 修正必要
+│   ├── script.js             
 │   └── style.css
 │
 ├── templates/                # HTMLテンプレート
