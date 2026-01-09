@@ -41,6 +41,7 @@
 │   ├── db_credentials.py
 │   └── auth_legacy.py
 │
+├── security_monitor.py
 ├── .gitignore                # Git除外設定
 └── .dockerignore             # Docker除外設定
 ```
@@ -54,7 +55,10 @@
 ### 実行方法
 1. **UI表示**  
    ```
-   open index.html  # ブラウザで直接開いてください
+   python app.py
+
+   http://localhost:8080
+   
    ```
    → 七芒星 + 待機カード3枚が表示（ロード時にランダム）
 
