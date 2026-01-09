@@ -3,17 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MOREW Circulation</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>七芒星防御システム</title>
-    <link rel="stylesheet" href="style.css">  <!-- style.css に修正 -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <div class="header">
@@ -122,7 +113,6 @@
             </div>
         </div>
         </div>
-    <!-- スクリプト読み込み（最後に） -->
-    <script src="script.js"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
