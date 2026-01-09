@@ -29,6 +29,7 @@
 ├── templates/                # HTMLテンプレート
 │   └── index.html            
 │
+├── security_monitor.py
 ├── honeypot/                 # ハニーポットコード（デモ用）
 │   ├── __init__.py
 │   ├── api_gateway.py
@@ -41,7 +42,6 @@
 │   ├── db_credentials.py
 │   └── auth_legacy.py
 │
-├── security_monitor.py
 ├── .gitignore                # Git除外設定
 └── .dockerignore             # Docker除外設定
 ```
