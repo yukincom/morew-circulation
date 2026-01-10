@@ -9,9 +9,9 @@ logging.basicConfig(level=logging.INFO)
 app = Flask(__name__)
 
 # Vertex AI初期化
-PROJECT_ID = os.environ.get('PROJECT_ID', 'imposing-kite-474908-h0')
+PROJECT_ID = os.environ.get('PROJECT_ID', 'ID')
 LOCATION = os.environ.get('LOCATION', 'us-central1')
-ENDPOINT_ID = os.environ.get('VERTEX_ENDPOINT_ID', '8554533616120496128')  
+ENDPOINT_ID = os.environ.get('VERTEX_ENDPOINT_ID', 'ID')  
 
 if PROJECT_ID:
     vertexai.init(project=PROJECT_ID, location=LOCATION)
