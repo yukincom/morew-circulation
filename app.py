@@ -12,9 +12,9 @@ logging.basicConfig(level=logging.DEBUG)
 
 app = Flask(__name__)
 
-PROJECT_ID = os.environ.get('PROJECT_ID', '')
+PROJECT_ID = os.environ.get('PROJECT_ID', 'ID')
 LOCATION = os.environ.get('LOCATION', 'us-central1')
-ENDPOINT_ID = os.environ.get('VERTEX_ENDPOINT_ID', '')  
+ENDPOINT_ID = os.environ.get('VERTEX_ENDPOINT_ID', 'ID')  
 
 if PROJECT_ID:
     vertexai.init(project=PROJECT_ID, location=LOCATION)
