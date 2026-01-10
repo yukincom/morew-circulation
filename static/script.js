@@ -1,63 +1,6 @@
-function updateWaitingModules() {
-    const container = document.getElementById('activeModules');
-    if (!container) return;
-    
-    container.innerHTML = '';
-    
-    (systemState.waitingModules || []).forEach(moduleName => {
-        const card = document.createElement('div');
-        card.className = 'module-card';
-        card.textContent = moduleName;
-        container.appendChild(card);
-    });
-}
-
-function shuffleWaitingModules() {
-    if (systemState.keyVerified) return;
-    
-    const shuffled = [...systemState.allModules].sort(() => Math.random() - 0.5);
-    systemState.waitingModules = shuffled.slice(0, 3);
-    updateWaitingModules();
-}
-
-function drawHeptagram() {
-    const svg = document.getElementById('star-lines');
-    const centerX = 275;
-    const centerY = 275;
-    const radius = 200;
-    const points = 7;
-    
-    const vertices = [];
-    for (let i = 0; i < points; i++) {
-        const angle = (Math.PI * 2 * i / points) - Math.PI / 2;
-        vertices.push({
-            x: centerX + radius * Math.cos(angle),
-            y: centerY + radius * Math.sin(angle)
-        });
-    }
-    
-    let pathData = `M ${vertices[0].x} ${vertices[0].y}`;
-    for (let i = 0; i < points; i++) {
-        const nextIndex = (i * 3) % points;
-        pathData += ` L ${vertices[nextIndex].x} ${vertices[nextIndex].y}`;
-    }
-    pathData += ' Z';
-    
-    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    path.setAttribute('d', pathData);
-    path.setAttribute('stroke', 'white');
-    path.setAttribute('stroke-width', '3');
-    path.setAttribute('fill', 'none');
-    path.setAttribute('opacity', '0.8');
-    svg.appendChild(path);
-    
-    vertices.forEach((vertex, index) => {
-        const label = document.getElementById(`vertex-${index}`);
-        label.style.left = `${vertex.x}px`;
-        label.style.top = `${vertex.y}px`;
-    });
-}
-
+// ========================================
+// 1. システム状態の初期化
+// ========================================
 let systemState = {
     keyVerified: false,
     intrusionDetected: false,
@@ -86,6 +29,35 @@ let systemState = {
     currentMode: null
 };
 
+// ========================================
+// 2. ユーティリティ関数
+// ========================================
+
+// 待機モジュール表示を更新
+function updateWaitingModules() {
+    const container = document.getElementById('activeModules');
+    if (!container) return;
+    
+    container.innerHTML = '';
+    
+    (systemState.waitingModules || []).forEach(moduleName => {
+        const card = document.createElement('div');
+        card.className = 'module-card';
+        card.textContent = moduleName;
+        container.appendChild(card);
+    });
+}
+
+// 待機モジュールをシャッフル
+function shuffleWaitingModules() {
+    if (systemState.keyVerified) return;
+    
+    const shuffled = [...systemState.allModules].sort(() => Math.random() - 0.5);
+    systemState.waitingModules = shuffled.slice(0, 3);
+    updateWaitingModules();
+}
+
+// ログ追加
 function addLog(type, message) {
     const container = document.getElementById('logContainer');
     const entry = document.createElement('div');
@@ -105,21 +77,25 @@ function addLog(type, message) {
     container.scrollTop = container.scrollHeight;
 }
 
+// 頂点をアクティブ化（七芒星を光らせる）
 function activateVertex(index) {
     document.querySelectorAll('.vertex-label').forEach(el => {
         el.classList.remove('active');
     });
     
     const vertex = document.getElementById(`vertex-${index}`);
-    vertex.classList.add('active');
-    systemState.currentVertex = index;
-    
-    const filename = vertex.textContent;
-    addLog('read', `ファイル読み込み: ${filename}`);
-    systemState.stats.fileAccess++;
-    updateStats();
+    if (vertex) {
+        vertex.classList.add('active');
+        systemState.currentVertex = index;
+        
+        const filename = vertex.textContent;
+        addLog('read', `ファイル読み込み: ${filename}`);
+        systemState.stats.fileAccess++;
+        updateStats();
+    }
 }
 
+// 統計情報を更新
 function updateStats() {
     document.getElementById('statFileAccess').textContent = systemState.stats.fileAccess;
     document.getElementById('statExecution').textContent = systemState.stats.execution;
@@ -131,6 +107,7 @@ function updateStats() {
     }
 }
 
+// シミュレーション停止
 function stopSimulation() {
     if (systemState.simulationInterval) {
         clearInterval(systemState.simulationInterval);
@@ -138,10 +115,60 @@ function stopSimulation() {
     }
 }
 
+// Vertex AI停止
 function stopVertexAI() {
     systemState.vertexAIRunning = false;
 }
 
+// ========================================
+// 3. 七芒星描画
+// ========================================
+function drawHeptagram() {
+    const svg = document.getElementById('star-lines');
+    const centerX = 275;
+    const centerY = 275;
+    const radius = 200;
+    const points = 7;
+    
+    // 頂点座標を計算
+    const vertices = [];
+    for (let i = 0; i < points; i++) {
+        const angle = (Math.PI * 2 * i / points) - Math.PI / 2;
+        vertices.push({
+            x: centerX + radius * Math.cos(angle),
+            y: centerY + radius * Math.sin(angle)
+        });
+    }
+    
+    // 七芒星のパスを作成（頂点を3つ飛ばしで結ぶ）
+    let pathData = `M ${vertices[0].x} ${vertices[0].y}`;
+    for (let i = 0; i < points; i++) {
+        const nextIndex = (i * 3) % points;
+        pathData += ` L ${vertices[nextIndex].x} ${vertices[nextIndex].y}`;
+    }
+    pathData += ' Z';
+    
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', pathData);
+    path.setAttribute('stroke', 'white');
+    path.setAttribute('stroke-width', '3');
+    path.setAttribute('fill', 'none');
+    path.setAttribute('opacity', '0.8');
+    svg.appendChild(path);
+    
+    // ラベル位置を設定
+    vertices.forEach((vertex, index) => {
+        const label = document.getElementById(`vertex-${index}`);
+        if (label) {
+            label.style.left = `${vertex.x}px`;
+            label.style.top = `${vertex.y}px`;
+        }
+    });
+}
+
+// ========================================
+// 4. シミュレーション（攻撃シミュレーション）
+// ========================================
 function simulateIntrusion() {
     if (systemState.keyVerified) return;
     
@@ -189,6 +216,7 @@ function simulateIntrusion() {
         updateStats();
         actionIndex++;
         
+        // 5分経過でアラート
         const elapsed = (Date.now() - systemState.startTime) / 1000;
         if (elapsed > 300) {
             stopSimulation();
@@ -197,6 +225,7 @@ function simulateIntrusion() {
     }, 2000 + Math.random() * 2000);
 }
 
+// アラート発動
 function triggerAlert() {
     systemState.intrusionDetected = true;
     
@@ -208,6 +237,248 @@ function triggerAlert() {
     addLog('error', '🚨 人間の介入が必要です');
 }
 
+// ========================================
+// 5. Vertex AI攻撃（共通処理）
+// ========================================
+
+async function runVertexAIAttack() {
+    try {
+        // まずストリーミングを試す
+        const streamingSuccess = await tryStreamingAttack();
+        
+        // ストリーミングが使えなかった場合は従来方式
+        if (!streamingSuccess) {
+            addLog('info', 'ℹ️ 通常モードで実行します');
+            await runTraditionalAttack();
+        }
+        
+    } catch (error) {
+        addLog('error', `❌ Vertex AI接続エラー: ${error.message}`);
+    }
+}
+// ストリーミングモードを試行
+async function tryStreamingAttack() {
+    try {
+        addLog('exec', '🤖 Vertex AIが思考を開始（ストリーミング）...');
+        console.log('🔵 ストリーミング開始');
+        
+        const response = await fetch('/attack', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                system_state: systemState,
+                active_modules: systemState.waitingModules,
+                streaming: true
+            })
+        });
+        
+        if (!response.ok) {
+            console.error('❌ Response not OK:', response.status);
+            return false;
+        }
+        
+        const contentType = response.headers.get('content-type');
+        console.log('📝 Content-Type:', contentType);
+        
+        if (!contentType?.includes('text/event-stream')) {
+            console.error('❌ Not SSE:', contentType);
+            return false;
+        }
+        
+        // ★★★ ReadableStream でSSEを読み取る ★★★
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder('utf-8');
+        let buffer = '';
+        let fullText = '';
+        
+        console.log('✅ SSE接続成功、読み取り開始...');
+        
+        while (true) {
+            const { done, value } = await reader.read();
+            
+            if (done) {
+                console.log('✅ ストリーム完了');
+                break;
+            }
+            
+            if (!systemState.vertexAIRunning || systemState.currentMode !== 'vertexai') {
+                reader.cancel();
+                addLog('info', 'ℹ️ Vertex AI停止');
+                return true;
+            }
+            
+            buffer += decoder.decode(value, { stream: true });
+            
+            // SSE形式のパース（data: {...}\n\n で区切られる）
+            const lines = buffer.split('\n\n');
+            buffer = lines.pop() || '';
+            
+            for (const line of lines) {
+                if (line.startsWith('data: ')) {
+                    try {
+                        const jsonStr = line.slice(6);
+                        console.log('📦 受信:', jsonStr.substring(0, 100) + '...');
+                        
+                        const data = JSON.parse(jsonStr);
+                        
+                        if (data.status === 'error') {
+                            console.error('❌ エラー受信:', data.message);
+                            addLog('error', `❌ ${data.message}`);
+                            return true;
+                        }
+                        
+                        if (data.status === 'complete') {
+                            console.log('✅ 完了通知受信:', data);
+                            addLog('info', `✅ 思考完了（${data.total_chunks}チャンク）`);
+                            
+                            // 残りのバッファがあれば表示
+                            if (fullText.trim()) {
+                                const remaining = fullText.split(/[。！？\n]/).filter(s => s.trim());
+                                for (const sentence of remaining) {
+                                    if (sentence.trim()) {
+                                        const isThinking = fullText.includes('💭');
+                                        const logType = isThinking ? 'exec' : 'read';
+                                        await displayThinkingStep(sentence.trim() + '。', logType);
+                                    }
+                                }
+                            }
+                            return true;
+                        }
+                        
+                        // ★★★ ここに新しいコードを追加 ★★★
+                        if (data.status === 'streaming' && data.chunk) {
+                            // ★ type フィールドで思考と出力を区別
+                            const isThinking = data.type === 'thinking';
+                            const prefix = isThinking ? '💭 [思考] ' : '🤖 ';
+                            const logType = isThinking ? 'exec' : 'read';
+                            
+                            console.log(`${prefix}受信:`, data.chunk.substring(0, 100));
+                            
+                            fullText += data.chunk;
+                            
+                            // 文末区切りで表示（。！？改行）
+                            const sentences = fullText.split(/([。！？\n])/);
+                            
+                            // 完全な文だけを処理
+                            while (sentences.length >= 2) {
+                                const sentence = sentences.shift().trim();
+                                const delimiter = sentences.shift();
+                                
+                                if (sentence) {
+                                    console.log(`${prefix}表示:`, sentence + delimiter);
+                                    await displayThinkingStep(prefix + sentence + delimiter, logType);
+                                }
+                            }
+                            
+                            // 最後の不完全な文を保持
+                            fullText = sentences.join('');
+                        }
+                        
+                    } catch (e) {
+                        console.error('❌ SSE parse error:', e, 'Line:', line);
+                    }
+                }
+            }
+        }
+        
+        return true;
+        
+    } catch (error) {
+        console.error('❌ Streaming failed:', error);
+        return false;
+    }
+}
+
+// 従来の非ストリーミングモード（フォールバック）
+async function runTraditionalAttack() {
+    try {
+        const response = await fetch('/attack', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                system_state: systemState,
+                active_modules: systemState.waitingModules,
+                streaming: false  // ★ 非ストリーミング指定
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.status === 'error') {
+            addLog('error', `❌ ${data.log}`);
+            return;
+        }
+        
+        const steps = data.log.split('\n').filter(line => line.trim());
+        
+        for (let i = 0; i < steps.length; i++) {
+            if (!systemState.vertexAIRunning || systemState.currentMode !== 'vertexai') {
+                addLog('info', '⏹️ Vertex AI停止');
+                break;
+            }
+            
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            
+            const stepText = steps[i];
+            addLog('read', `🤖 ${stepText}`);
+            
+            // ファイル名が含まれていたら頂点を光らせる
+            const foundModuleIndex = systemState.allModules.findIndex(m => stepText.includes(m));
+            if (foundModuleIndex !== -1) {
+                activateVertex(foundModuleIndex % 7);
+            }
+            
+            // エラー検知
+            if (stepText.includes('Error') || stepText.includes('循環') || stepText.includes('ループ')) {
+                systemState.stats.errors++;
+            }
+            systemState.stats.execution++;
+            updateStats();
+        }
+        
+    } catch (error) {
+        addLog('error', `❌ Vertex AI接続エラー: ${error.message}`);
+    }
+}
+
+// 思考ステップを表示する補助関数
+async function displayThinkingStep(stepText, logType = 'read') {
+    if (!systemState.vertexAIRunning || systemState.currentMode !== 'vertexai') {
+        return;
+    }
+    
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    addLog(logType, stepText);
+    
+    // ファイル名検出 → 頂点を光らせる
+    const foundModuleIndex = systemState.allModules.findIndex(m => 
+        stepText.includes(m)
+    );
+    if (foundModuleIndex !== -1) {
+        activateVertex(foundModuleIndex % 7);
+        systemState.stats.fileAccess++;
+    }
+    
+    // エラー検出
+    const errorKeywords = ['Error', '循環', 'ループ', '失敗', 'エラー', 'RecursionError', 'ImportError'];
+    if (errorKeywords.some(keyword => stepText.includes(keyword))) {
+        systemState.stats.errors++;
+    }
+    
+    systemState.stats.execution++;
+    updateStats();
+}
+
+// ========================================
+// 6. イベントリスナー
+// ========================================
+
+// 物理キーファイル選択
 document.getElementById('keyFileInput').addEventListener('change', function(e) {
     const file = e.target.files[0];
     if (file) {
@@ -217,6 +488,7 @@ document.getElementById('keyFileInput').addEventListener('change', function(e) {
     }
 });
 
+// 物理キー検証
 document.getElementById('verifyKeyBtn').addEventListener('click', function() {
     const file = document.getElementById('keyFileInput').files[0];
     if (!file) return;
@@ -265,14 +537,27 @@ document.getElementById('verifyKeyBtn').addEventListener('click', function() {
     reader.readAsText(file);
 });
 
+// 攻撃シミュレーションボタン
 document.getElementById('toggleTacticalBtn').addEventListener('click', function() {
     const view = document.getElementById('tacticalView');
-    const isVisible = view.classList.contains('visible');
     
-    if (!isVisible) {
+    if (systemState.currentMode === 'simulation') {
+        // シミュレーション停止
+        stopSimulation();
+        systemState.currentMode = null;
+        this.textContent = '📊 攻撃シミュレーションを表示';
+        view.classList.remove('visible');
+        document.getElementById('vertexAttackBtn').textContent = '🤖 Vertex AIで挑戦する';
+        addLog('info', '⏸️ シミュレーションモードを停止しました');
+        
+    } else {
+        // シミュレーション開始
         view.classList.add('visible');
+        stopVertexAI();
+        
         systemState.currentMode = 'simulation';
         this.textContent = '📊 攻撃シミュレーションを停止';
+        document.getElementById('vertexAttackBtn').textContent = '🤖 Vertex AIに切り替え';
         
         if (!systemState.startTime) {
             systemState.startTime = Date.now();
@@ -283,26 +568,51 @@ document.getElementById('toggleTacticalBtn').addEventListener('click', function(
             }, 1000);
         }
         
-        stopVertexAI();
-        simulateIntrusion();
-        
-        document.getElementById('vertexAttackBtn').textContent = '🤖 Vertex AIに切り替え';
-    } else if (systemState.currentMode === 'simulation') {
-        stopSimulation();
-        systemState.currentMode = null;
-        this.textContent = '📊 攻撃シミュレーションを表示';
-        view.classList.remove('visible');
-        document.getElementById('vertexAttackBtn').textContent = '🤖 Vertex AIで挑戦する';
-    } else {
-        stopVertexAI();
-        systemState.currentMode = 'simulation';
-        this.textContent = '📊 攻撃シミュレーションを停止';
-        document.getElementById('vertexAttackBtn').textContent = '🤖 Vertex AIに切り替え';
-        
+        addLog('info', '📊 攻撃シミュレーションモードに切り替わりました');
         simulateIntrusion();
     }
 });
 
+// Vertex AIボタン
+document.getElementById('vertexAttackBtn').addEventListener('click', async function() {
+    const view = document.getElementById('tacticalView');
+    
+    if (systemState.currentMode === 'vertexai') {
+        // Vertex AI停止
+        stopVertexAI();
+        systemState.currentMode = null;
+        this.textContent = '🤖 Vertex AIで挑戦する';
+        view.classList.remove('visible');
+        document.getElementById('toggleTacticalBtn').textContent = '📊 攻撃シミュレーションを表示';
+        addLog('info', '⏸️ Vertex AIモードを停止しました');
+        
+    } else {
+        // Vertex AI開始
+        view.classList.add('visible');
+        stopSimulation();
+        
+        systemState.currentMode = 'vertexai';
+        this.textContent = '🤖 Vertex AIを停止';
+        document.getElementById('toggleTacticalBtn').textContent = '📊 シミュレーションに切り替え';
+        
+        if (!systemState.startTime) {
+            systemState.startTime = Date.now();
+            setInterval(() => {
+                if (!systemState.keyVerified) {
+                    updateStats();
+                }
+            }, 1000);
+        }
+        
+        systemState.vertexAIRunning = true;
+        addLog('info', '🤖 Vertex AIモードに切り替わりました');
+        
+        // ★★★ ストリーミング攻撃開始 ★★★
+        await runVertexAIAttack();
+    }
+});
+
+// 戦術画面を閉じる
 document.getElementById('closeTacticalBtn').addEventListener('click', function() {
     stopSimulation();
     stopVertexAI();
@@ -311,116 +621,12 @@ document.getElementById('closeTacticalBtn').addEventListener('click', function()
     document.getElementById('tacticalView').classList.remove('visible');
     document.getElementById('toggleTacticalBtn').textContent = '📊 攻撃シミュレーションを表示';
     document.getElementById('vertexAttackBtn').textContent = '🤖 Vertex AIで挑戦する';
+    addLog('info', '⏸️ 戦術画面を閉じました');
 });
 
-document.getElementById('vertexAttackBtn').addEventListener('click', async function() {
-    const view = document.getElementById('tacticalView');
-    const isVisible = view.classList.contains('visible');
-    
-    if (!isVisible) {
-        view.classList.add('visible');
-        systemState.currentMode = 'vertexai';
-        this.textContent = '🤖 Vertex AIを停止';
-        
-        if (!systemState.startTime) {
-            systemState.startTime = Date.now();
-            setInterval(() => {
-                if (!systemState.keyVerified) {
-                    updateStats();
-                }
-            }, 1000);
-        }
-        
-        stopSimulation();
-        document.getElementById('toggleTacticalBtn').textContent = '📊 シミュレーションに切り替え';
-        
-        systemState.vertexAIRunning = true;
-        addLog('exec', '🤖 Vertex AIが思考を開始...');
-        
-        try {
-            const response = await fetch('/attack', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    system_state: systemState,
-                    active_modules: systemState.waitingModules
-                })
-            });
-            
-            const data = await response.json();
-            
-            const steps = data.log.split('\n').filter(line => line.trim());
-            for (let i = 0; i < steps.length; i++) {
-                if (!systemState.vertexAIRunning || systemState.currentMode !== 'vertexai') break;
-
-            await new Promise(resolve => setTimeout(resolve, 1500));
-    
-            const stepText = steps[i];
-            addLog('read', `🤖 ${stepText}`);
-
-    // 【追加】AIの言葉にファイル名が含まれていたら、七芒星の頂点を光らせる
-            const foundModuleIndex = systemState.allModules.findIndex(m => stepText.includes(m));
-            if (foundModuleIndex !== -1) {
-                activateVertex(foundModuleIndex); // 七芒星を光らせる
-                systemState.stats.fileAccess++;    // カウントアップ
-                updateStats();                     // 画面の数字を更新
-            }
-
-    // 【追加】AIが「エラー」や「ループ」に言及したら統計を増やす
-            if (stepText.includes('Error') || stepText.includes('循環') || stepText.includes('ループ')) {
-               systemState.stats.errors++;
-            }
-            systemState.stats.execution++;
-            updateStats(); // 画面の数字を更新
-        }   
-        
-        } catch (error) {
-            addLog('error', `❌ Vertex AI接続エラー: ${error.message}`);
-        }
-    } else if (systemState.currentMode === 'vertexai') {
-        stopVertexAI();
-        systemState.currentMode = null;
-        this.textContent = '🤖 Vertex AIで挑戦する';
-        view.classList.remove('visible');
-        document.getElementById('toggleTacticalBtn').textContent = '📊 攻撃シミュレーションを表示';
-    } else {
-        stopSimulation();
-        systemState.currentMode = 'vertexai';
-        this.textContent = '🤖 Vertex AIを停止';
-        document.getElementById('toggleTacticalBtn').textContent = '📊 シミュレーションに切り替え';
-        
-        systemState.vertexAIRunning = true;
-        addLog('exec', '🤖 Vertex AIが思考を開始...');
-        
-        try {
-            const response = await fetch('/attack', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    system_state: systemState,
-                    active_modules: systemState.waitingModules
-                })
-            });
-            
-            const data = await response.json();
-            
-            const steps = data.log.split('\n').filter(line => line.trim());
-            for (let i = 0; i < steps.length; i++) {
-                if (!systemState.vertexAIRunning || systemState.currentMode !== 'vertexai') {
-                    addLog('error', '❌ Vertex AI停止');
-                    break;
-                }
-                
-                await new Promise(resolve => setTimeout(resolve, 1500));
-                addLog('read', `🤖 ${steps[i]}`);
-            }
-            
-        } catch (error) {
-            addLog('error', `❌ Vertex AI接続エラー: ${error.message}`);
-        }
-    }
-});
-
+// ========================================
+// 7. 初期化
+// ========================================
 window.addEventListener('load', () => {
     drawHeptagram();
     shuffleWaitingModules();
