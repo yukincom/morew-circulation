@@ -259,7 +259,7 @@ async function runVertexAIAttack() {
 // ストリーミングモードを試行
 async function tryStreamingAttack() {
     try {
-        addLog('exec', '🤖 Vertex AIが思考を開始（ストリーミング）...');
+        addLog('exec', '🤖 Vertex AIが思考を開始しました...');
         console.log('🔵 ストリーミング開始');
         
         const response = await fetch('/attack', {
@@ -345,7 +345,32 @@ async function tryStreamingAttack() {
                             return true;
                         }
                         
-                        // ★★★ ここに新しいコードを追加 ★★★
+                        if (data.status === 'loading_next') {
+                            console.log('📂 次のファイル読み込み:', data.next_file);
+                            addLog('info', `📂 次のファイルを読み込み中: ${data.next_file}`);
+    
+                        // visited_files があれば表示
+                        if (data.visited_files) {
+                            console.log('📊 訪問済みファイル:', data.visited_files);
+                        }
+                    }
+
+                        if (data.status === 'circular_detected') {
+                            console.log('🔄 循環参照検出:', data.file);
+                            if (data.is_circular) {
+                                addLog('error', `🔄 循環参照: ${data.file} は既に訪問済み（継続中）`);
+                                systemState.stats.errors++;
+                                updateStats();
+                            }
+                        }    
+
+                        if (data.status === 'file_not_found') {
+                            console.log('❌ ファイル未発見:', data.file);
+                            addLog('error', `❌ ファイルが見つかりません: ${data.file}`);
+                            systemState.stats.errors++;
+                            updateStats();
+                        }
+
                         if (data.status === 'streaming' && data.chunk) {
                             // ★ type フィールドで思考と出力を区別
                             const isThinking = data.type === 'thinking';
@@ -473,9 +498,8 @@ async function displayThinkingStep(stepText, logType = 'read') {
     systemState.stats.execution++;
     updateStats();
 }
-
 // ========================================
-// 6. イベントリスナー
+// 6. イベントリスナー（修正版）
 // ========================================
 
 // 物理キーファイル選択
@@ -537,23 +561,22 @@ document.getElementById('verifyKeyBtn').addEventListener('click', function() {
     reader.readAsText(file);
 });
 
-// 攻撃シミュレーションボタン
+// 攻撃シミュレーションボタン（修正版：画面は閉じない）
 document.getElementById('toggleTacticalBtn').addEventListener('click', function() {
     const view = document.getElementById('tacticalView');
     
     if (systemState.currentMode === 'simulation') {
-        // シミュレーション停止
+        // シミュレーション停止（画面は閉じない）
         stopSimulation();
         systemState.currentMode = null;
-        this.textContent = '📊 攻撃シミュレーションを表示';
-        view.classList.remove('visible');
-        document.getElementById('vertexAttackBtn').textContent = '🤖 Vertex AIで挑戦する';
-        addLog('info', '⏸️ シミュレーションモードを停止しました');
+        this.textContent = '📊 攻撃シミュレーションを再開';
+        document.getElementById('vertexAttackBtn').textContent = '🤖 Vertex AIに切り替え';
+        addLog('info', '⏸️ シミュレーションモードを一時停止しました');
         
     } else {
         // シミュレーション開始
         view.classList.add('visible');
-        stopVertexAI();
+        stopVertexAI();  // 他のモードを停止
         
         systemState.currentMode = 'simulation';
         this.textContent = '📊 攻撃シミュレーションを停止';
@@ -573,23 +596,22 @@ document.getElementById('toggleTacticalBtn').addEventListener('click', function(
     }
 });
 
-// Vertex AIボタン
+// Vertex AIボタン（修正版：画面は閉じない）
 document.getElementById('vertexAttackBtn').addEventListener('click', async function() {
     const view = document.getElementById('tacticalView');
     
     if (systemState.currentMode === 'vertexai') {
-        // Vertex AI停止
+        // Vertex AI停止（画面は閉じない！）
         stopVertexAI();
         systemState.currentMode = null;
-        this.textContent = '🤖 Vertex AIで挑戦する';
-        view.classList.remove('visible');
-        document.getElementById('toggleTacticalBtn').textContent = '📊 攻撃シミュレーションを表示';
-        addLog('info', '⏸️ Vertex AIモードを停止しました');
+        this.textContent = '🤖 Vertex AIを再開';
+        document.getElementById('toggleTacticalBtn').textContent = '📊 シミュレーションに切り替え';
+        addLog('info', '⏸️ Vertex AIモードを一時停止しました');
         
     } else {
         // Vertex AI開始
         view.classList.add('visible');
-        stopSimulation();
+        stopSimulation();  // 他のモードを停止
         
         systemState.currentMode = 'vertexai';
         this.textContent = '🤖 Vertex AIを停止';
@@ -607,12 +629,11 @@ document.getElementById('vertexAttackBtn').addEventListener('click', async funct
         systemState.vertexAIRunning = true;
         addLog('info', '🤖 Vertex AIモードに切り替わりました');
         
-        // ★★★ ストリーミング攻撃開始 ★★★
         await runVertexAIAttack();
     }
 });
 
-// 戦術画面を閉じる
+// 戦術画面を閉じる（修正版：すべて停止して画面を閉じる）
 document.getElementById('closeTacticalBtn').addEventListener('click', function() {
     stopSimulation();
     stopVertexAI();
